@@ -2,7 +2,7 @@ import random
 import tkinter
 from PIL import Image, ImageTk
 
-
+# initializing variables
 deck = []
 player = []
 dealer = []
@@ -11,6 +11,7 @@ player_card_slots = 0
 player_total = 0
 dealer_total = 0
 
+
 # refill deck function
 def refill_deck():
     global deck
@@ -18,10 +19,11 @@ def refill_deck():
     # suits possible
     suits = ["diamonds", "clubs", "hearts", "spades"]
     # values possible
-    values = range(2,15)
+    values = range(2, 15)
     for suit in suits:
         for value in values:
             deck.append(f'{value}_of_{suit}')
+    # reset image of dealer and player hands to nothing
     dealer_label_1.config(image='')
     dealer_label_2.config(image='')
     dealer_label_3.config(image='')
@@ -45,7 +47,10 @@ def game_start():
     start_button["state"] = "disabled"
     start()
 
+
+# game end function
 def game_end():
+    # disables buttons
     stand["state"] = "disabled"
     hit["state"] = "disabled"
     double["state"] = "disabled"
@@ -53,31 +58,51 @@ def game_end():
     start_button["state"] = "normal"
     reset()
 
+
+# start function
 def start():
-    global dealer,player
+    global dealer, player
     dealer = []
     player = []
 
+    # fills deck with cards
     refill_deck()
+<<<<<<< HEAD
     deal_player_card()
     deal_dealer_card()
     deal_player_card()
     deal_dealer_card()
     calculate_player_hand()
     calculate_dealer_hand()
+=======
+    # deals 2 cards each to player and dealer
+    deal_player_card()
+    deal_dealer_card()
+    deal_player_card()
+    deal_dealer_card()
+>>>>>>> c8fcaeec5a9066b8732caafba1ca045498510053
 
 
 # deal player a card
 def deal_player_card():
     global player_card_slots
+    # max card slots is 5
     if player_card_slots < 5:
+        # try except statement for if you run out of cards
         try:
+            # at random choose a card from deck
             player_card = random.choice(deck)
+            # remove that card from deck and append it to your hand
             deck.remove(player_card)
             player.append(player_card)
 
             global player_image_1, player_image_2, player_image_3, player_image_4, player_image_5
+<<<<<<< HEAD
             calculate_player_hand()
+=======
+
+            # if at card slot x, then label x is where your image will be, and then increment to the next card slot
+>>>>>>> c8fcaeec5a9066b8732caafba1ca045498510053
             if player_card_slots == 0:
                 player_image_1 = resize_cards(f'deck/{player_card}.png')
                 player_label_1.config(image=player_image_1)
@@ -89,6 +114,7 @@ def deal_player_card():
             elif player_card_slots == 2:
                 player_image_3 = resize_cards(f'deck/{player_card}.png')
                 player_label_3.config(image=player_image_3)
+                # disable fold option after hit
                 fold["state"] = "disabled"
                 player_card_slots += 1
             elif player_card_slots == 3:
@@ -99,21 +125,32 @@ def deal_player_card():
                 player_image_5 = resize_cards(f'deck/{player_card}.png')
                 player_label_5.config(image=player_image_5)
                 player_card_slots += 1
+            # title of interface displays how many cards left in deck
             root.title(f'Blackjack - {len(deck)} cards left')
         except:
             root.title(f'Blackjack - No Cards Left')
 
+
 # deal dealer a card
 def deal_dealer_card():
     global dealer_card_slots
+    # max card slots is 5
     if dealer_card_slots < 5:
+        # try except statement for if you run out of cards
         try:
+            # at random choose a card from deck
             dealer_card = random.choice(deck)
+            # remove that card from deck and append it to your hand
             deck.remove(dealer_card)
             dealer.append(dealer_card)
 
             global dealer_image_1, dealer_image_2, dealer_image_3, dealer_image_4, dealer_image_5
+<<<<<<< HEAD
             calculate_dealer_hand()
+=======
+
+            # if at card slot x, then label x is where your image will be, and then increment to the next card slot
+>>>>>>> c8fcaeec5a9066b8732caafba1ca045498510053
             if dealer_card_slots == 0:
                 dealer_image_1 = resize_cards(f'deck/{dealer_card}.png')
                 dealer_label_1.config(image=dealer_image_1)
@@ -125,6 +162,7 @@ def deal_dealer_card():
             elif dealer_card_slots == 2:
                 dealer_image_3 = resize_cards(f'deck/{dealer_card}.png')
                 dealer_label_3.config(image=dealer_image_3)
+                # disable fold and hit options after standing
                 fold["state"] = "disabled"
                 hit["state"] = "disabled"
                 double["state"] = "disabled"
@@ -142,10 +180,16 @@ def deal_dealer_card():
         except:
             root.title(f'Blackjack - No Cards Left')
 
+
 # reset function
 def reset():
+<<<<<<< HEAD
     global player, dealer, player_card_slots, dealer_card_slots, player_total, dealer_total, player_value, dealer_value
     # reset deck into the default full deck
+=======
+    global player, dealer, player_card_slots, dealer_card_slots
+    # reset all settings back to default
+>>>>>>> c8fcaeec5a9066b8732caafba1ca045498510053
     refill_deck()
     player_card_slots = 0
     dealer_card_slots = 0
@@ -157,6 +201,7 @@ def reset():
     player_value = 0
     dealer_value = 0
 
+
 # resizing the card images
 def resize_cards(card):
     card_image = Image.open(card)
@@ -167,12 +212,22 @@ def resize_cards(card):
     card_img = ImageTk.PhotoImage(card_image_resize)
     return card_img
 
+<<<<<<< HEAD
 def fold_function():
+=======
+
+def die():
+    # reset and deal new hands
+>>>>>>> c8fcaeec5a9066b8732caafba1ca045498510053
     reset()
     deal_player_card()
     deal_dealer_card()
     deal_player_card()
     deal_dealer_card()
+<<<<<<< HEAD
+=======
+
+>>>>>>> c8fcaeec5a9066b8732caafba1ca045498510053
 
 def stand_function():
     pass
@@ -231,16 +286,24 @@ buttonFrame.columnconfigure(3, weight=1)
 
 # play buttons
 stand = tkinter.Button(buttonFrame, bg="#852928", fg='white',
+<<<<<<< HEAD
                         text='Stand', font=('Arial', 16), command=stand_function)
+=======
+                       text='Stand', font=('Arial', 16), command=deal_dealer_card)
+>>>>>>> c8fcaeec5a9066b8732caafba1ca045498510053
 stand.grid(row=0, column=0, sticky=tkinter.W + tkinter.E)
 hit = tkinter.Button(buttonFrame, bg="black", fg='white',
-                        text='Hit', font=('Arial', 16), command=deal_player_card)
+                     text='Hit', font=('Arial', 16), command=deal_player_card)
 hit.grid(row=0, column=1, sticky=tkinter.W + tkinter.E)
 double = tkinter.Button(buttonFrame, bg="#852928", fg='white',
                         text='Double', font=('Arial', 16))
 double.grid(row=0, column=2, sticky=tkinter.W + tkinter.E)
 fold = tkinter.Button(buttonFrame, bg="black", fg='white',
+<<<<<<< HEAD
                         text='Fold', font=('Arial', 16), command=fold_function)
+=======
+                      text='Fold', font=('Arial', 16), command=die)
+>>>>>>> c8fcaeec5a9066b8732caafba1ca045498510053
 fold.grid(row=0, column=3, sticky=tkinter.W + tkinter.E)
 buttonFrame.pack(fill='x')
 
@@ -300,5 +363,3 @@ fold["state"] = "disabled"
 start_button["state"] = "normal"
 
 root.mainloop()
-
-
