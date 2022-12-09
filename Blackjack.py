@@ -8,6 +8,8 @@ player = []
 dealer = []
 dealer_card_slots = 0
 player_card_slots = 0
+player_total = 0
+dealer_total = 0
 
 # refill deck function
 def refill_deck():
@@ -58,9 +60,11 @@ def start():
 
     refill_deck()
     deal_player_card()
+    deal_dealer_card()
     deal_player_card()
     deal_dealer_card()
-    deal_dealer_card()
+    calculate_player_hand()
+    calculate_dealer_hand()
 
 
 # deal player a card
@@ -73,7 +77,7 @@ def deal_player_card():
             player.append(player_card)
 
             global player_image_1, player_image_2, player_image_3, player_image_4, player_image_5
-
+            calculate_player_hand()
             if player_card_slots == 0:
                 player_image_1 = resize_cards(f'deck/{player_card}.png')
                 player_label_1.config(image=player_image_1)
@@ -90,12 +94,10 @@ def deal_player_card():
             elif player_card_slots == 3:
                 player_image_4 = resize_cards(f'deck/{player_card}.png')
                 player_label_4.config(image=player_image_4)
-                fold["state"] = "disabled"
                 player_card_slots += 1
             elif player_card_slots == 4:
                 player_image_5 = resize_cards(f'deck/{player_card}.png')
                 player_label_5.config(image=player_image_5)
-                fold["state"] = "disabled"
                 player_card_slots += 1
             root.title(f'Blackjack - {len(deck)} cards left')
         except:
@@ -108,10 +110,10 @@ def deal_dealer_card():
         try:
             dealer_card = random.choice(deck)
             deck.remove(dealer_card)
-            player.append(dealer_card)
+            dealer.append(dealer_card)
 
             global dealer_image_1, dealer_image_2, dealer_image_3, dealer_image_4, dealer_image_5
-
+            calculate_dealer_hand()
             if dealer_card_slots == 0:
                 dealer_image_1 = resize_cards(f'deck/{dealer_card}.png')
                 dealer_label_1.config(image=dealer_image_1)
@@ -125,16 +127,16 @@ def deal_dealer_card():
                 dealer_label_3.config(image=dealer_image_3)
                 fold["state"] = "disabled"
                 hit["state"] = "disabled"
+                double["state"] = "disabled"
+                stand["state"] = "disabled"
                 dealer_card_slots += 1
             elif dealer_card_slots == 3:
                 dealer_image_4 = resize_cards(f'deck/{dealer_card}.png')
                 dealer_label_4.config(image=dealer_image_4)
-                fold["state"] = "disabled"
                 dealer_card_slots += 1
             elif dealer_card_slots == 4:
                 dealer_image_5 = resize_cards(f'deck/{dealer_card}.png')
                 dealer_label_5.config(image=dealer_image_5)
-                fold["state"] = "disabled"
                 dealer_card_slots += 1
             root.title(f'Blackjack - {len(deck)} cards left')
         except:
@@ -142,7 +144,7 @@ def deal_dealer_card():
 
 # reset function
 def reset():
-    global player, dealer, player_card_slots, dealer_card_slots
+    global player, dealer, player_card_slots, dealer_card_slots, player_total, dealer_total, player_value, dealer_value
     # reset deck into the default full deck
     refill_deck()
     player_card_slots = 0
@@ -150,6 +152,10 @@ def reset():
     root.title(f'Blackjack')
     player = []
     dealer = []
+    player_total = 0
+    dealer_total = 0
+    player_value = 0
+    dealer_value = 0
 
 # resizing the card images
 def resize_cards(card):
@@ -161,51 +167,50 @@ def resize_cards(card):
     card_img = ImageTk.PhotoImage(card_image_resize)
     return card_img
 
-def die():
+def fold_function():
     reset()
     deal_player_card()
+    deal_dealer_card()
     deal_player_card()
     deal_dealer_card()
-    deal_dealer_card()
 
-# def calculate_player_hand():
-#     total = 0
-#     face = ["J", "Q", "K"]
-#     for card in player:
-#         if card in range(1, 11):
-#             total += card
-#         elif card in face:
-#             total += 10
-#         elif card == "A":
-#             total += 11
-#     if total == 21:
-#         print("Blackjack! You win!")
-#         print(f'Your total: {total}')
-#         reset()
-#     elif total > 21:
-#         print("Bust! You lose!")
-#         print(f'Your total: {total}')
-#         reset()
+def stand_function():
+    pass
+
+def calculate_player_hand():
+    global player_total, player
+    for c in player:
+        value = int(c.split("_")[0])
+        if value in range(2,11):
+            player_total += value
+        elif value in range(11,14):
+            player_total += 10
+        elif value == 14:
+            player_total += 11
+    if player_total == 21:
+        print("blackjack you win")
+    elif player_total > 21:
+        print("bust you lose")
+    print(player_total)
+    player_total = 0
 
 
-# def calculate_dealer_hand():
-#     total = 0
-#     face = ["J", "Q", "K"]
-#     for card in dealer:
-#         if card in range(1, 11):
-#             total += card
-#         elif card in face:
-#             total += 10
-#         elif card == "A":
-#             total += 11
-#     if total == 21:
-#         print("Dealer Blackjack! You lose")
-#         print(f'Dealer total: {total}')
-#         reset()
-#     elif total > 21:
-#         print("Dealer Bust! You win!")
-#         print(f'Dealer total: {total}')
-#         reset()
+def calculate_dealer_hand():
+    global dealer_total, dealer
+    for c in dealer:
+        value = int(c.split("_")[0])
+        if value in range(2,11):
+            dealer_total += value
+        elif value in range(11,14):
+            dealer_total += 10
+        elif value == 14:
+            dealer_total += 11
+    if dealer_total == 21:
+        print("blackjack you lose")
+    elif dealer_total > 21:
+        print("bust you win")
+    print(dealer_total)
+    dealer_total = 0
 
 
 # basic GUI setup
@@ -226,7 +231,7 @@ buttonFrame.columnconfigure(3, weight=1)
 
 # play buttons
 stand = tkinter.Button(buttonFrame, bg="#852928", fg='white',
-                        text='Stand', font=('Arial', 16), command=deal_dealer_card)
+                        text='Stand', font=('Arial', 16), command=stand_function)
 stand.grid(row=0, column=0, sticky=tkinter.W + tkinter.E)
 hit = tkinter.Button(buttonFrame, bg="black", fg='white',
                         text='Hit', font=('Arial', 16), command=deal_player_card)
@@ -235,7 +240,7 @@ double = tkinter.Button(buttonFrame, bg="#852928", fg='white',
                         text='Double', font=('Arial', 16))
 double.grid(row=0, column=2, sticky=tkinter.W + tkinter.E)
 fold = tkinter.Button(buttonFrame, bg="black", fg='white',
-                        text='Fold', font=('Arial', 16), command=die)
+                        text='Fold', font=('Arial', 16), command=fold_function)
 fold.grid(row=0, column=3, sticky=tkinter.W + tkinter.E)
 buttonFrame.pack(fill='x')
 
